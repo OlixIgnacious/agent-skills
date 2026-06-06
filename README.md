@@ -109,6 +109,16 @@ A drop-in workflow template for any codebase. Works across Claude Code, Antigrav
 
 ---
 
+### Meta
+
+> 1 skill · Build new skills and agents for this library
+
+| Command | What it does |
+|---------|-------------|
+| `/skill-creator` | Guided creation of a new skill or agent — gathers requirements, writes correctly structured files, places them in the right directories, updates the README |
+
+---
+
 ## Repository Structure
 
 ```
@@ -155,6 +165,7 @@ skills/                  ← slash-command skills, domain-prefixed
   sdlc-architectural-review/
   sdlc-feature-dev/
   sdlc-code-review/
+  skill-creator/
 
 domains/                 ← per-domain workflow guides and orchestration
   kaggle/
