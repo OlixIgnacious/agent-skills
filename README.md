@@ -56,6 +56,23 @@ A multi-domain Claude Code skill library — agents and skills organized by use 
 
 ---
 
+### SDLC Workbench — Software Development Lifecycle
+
+> 17 agents · 4 skills · Requirements → Architecture → Implementation → Review
+
+A drop-in workflow template for any codebase. Works across Claude Code, Antigravity, and GitHub Copilot.
+
+| File | Tool |
+|------|------|
+| `CLAUDE.md` | Claude Code |
+| `AGENTS.md` | Universal — Antigravity + Cursor + Claude Code |
+| `GEMINI.md` | Antigravity (`agy`) |
+| `.github/copilot-instructions.md` | GitHub Copilot |
+
+→ [SDLC domain guide](domains/sdlc/README.md)
+
+---
+
 ### Finance Research *(coming soon)*
 
 > 1 agent · skills planned · Quant research, factor analysis, backtesting, portfolio construction
