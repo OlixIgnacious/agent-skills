@@ -1,0 +1,17 @@
+{
+  "name": "kaggle-grandmaster-skills",
+  "description": "9 battle-tested Kaggle competition skills based on the NVIDIA Grandmasters Playbook — EDA, validation, diverse baselines, feature engineering at scale, hill climbing ensemble, stacking, pseudo-labeling, and seed ensembling with GPU acceleration.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Ashwini Sharma",
+    "email": "ashwini.sharma0807@gmail.com"
+  },
+  "category": "data-science",
+  "tags": ["kaggle", "machine-learning", "data-science", "ensemble", "feature-engineering", "gpu", "cudf", "xgboost", "lightgbm"],
+  "source": {
+    "source": "git-subdir",
+    "url": "https://github.com/ashwini-sharma/agent-skills",
+    "path": ".",
+    "ref": "main"
+  }
+}
