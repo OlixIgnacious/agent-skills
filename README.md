@@ -2,6 +2,12 @@
 
 A multi-domain Claude Code skill library — agents and skills organized by use case. Install once, use what's relevant.
 
+```bash
+# One-liner installer (interactive — picks domain + tool)
+curl -fsSL https://raw.githubusercontent.com/OlixIgnacious/agent-skills/main/install.sh | bash
+```
+
+Or as a Claude Code plugin:
 ```
 /plugin install OlixIgnacious/agent-skills
 ```
