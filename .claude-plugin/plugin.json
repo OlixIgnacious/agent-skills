@@ -1,13 +1,13 @@
 {
-  "name": "kaggle-grandmaster-skills",
-  "description": "12 Kaggle competition skills covering the full GM workflow — adversarial validation, fold strategy, EDA, diverse baselines, target transforms, Optuna hyperparameter search, feature engineering at scale, hill climbing, stacking, pseudo-labeling, and seed ensembling with GPU acceleration.",
-  "version": "1.1.0",
+  "name": "agent-skills",
+  "description": "Multi-domain Claude Code skill library. Current domains: Kaggle (12 competition skills — adversarial validation, EDA, baselines, Optuna, feature engineering, hill climbing, stacking, pseudo-labeling, seed ensembling). Finance domain coming soon.",
+  "version": "2.0.0",
   "author": {
     "name": "Ashwini Sharma",
     "email": "ashwini.sharma0807@gmail.com"
   },
   "category": "data-science",
-  "tags": ["kaggle", "machine-learning", "data-science", "ensemble", "feature-engineering", "gpu", "cudf", "xgboost", "lightgbm", "optuna", "adversarial-validation"],
+  "tags": ["kaggle", "machine-learning", "data-science", "finance", "ensemble", "optuna", "feature-engineering", "gpu"],
   "source": {
     "source": "git-subdir",
     "url": "https://github.com/OlixIgnacious/agent-skills",

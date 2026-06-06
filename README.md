@@ -1,60 +1,61 @@
-# Kaggle Grandmaster Skills
+# Agent Skills
 
-Claude Code skills for competitive machine learning, based on the [NVIDIA Kaggle Grandmasters Playbook](https://developer.nvidia.com/blog/the-kaggle-grandmasters-playbook-7-battle-tested-modeling-techniques-for-tabular-data/).
-
-## Install
+A multi-domain Claude Code skill library. Install once, use the skills relevant to your work.
 
 ```
-/plugin install ashwini-sharma/agent-skills
+/plugin install OlixIgnacious/agent-skills
 ```
 
-## Skills (12 total)
+---
 
-| Command | When to use |
-|---------|-------------|
-| `/kaggle-grandmaster` | Start every session — persona, judgment filters, shake-up avoidance |
-| `/kaggle-adversarial-validation` | Detect train/test distribution shift before locking folds |
-| `/kaggle-validation` | Lock fold strategy (KFold / TimeSeries / GroupKFold / MultilabelStratified) |
-| `/kaggle-eda` | Distribution analysis, leakage scan, temporal pattern detection |
-| `/kaggle-baselines` | Diverse model families simultaneously (Ridge + XGBoost + LGB + CatBoost + MLP) |
-| `/kaggle-target-transform` | Log/sqrt transforms, winsorization, probability calibration, beta sharpening |
-| `/kaggle-optuna` | Bayesian hyperparameter search (TPE) + Optuna ensemble weight optimization |
-| `/kaggle-feature-engineering` | Groupby aggs, interactions, CV-safe target encoding, lag/rolling features |
-| `/kaggle-hill-climbing` | Greedy ensemble selection + scipy/Optuna weight optimization |
-| `/kaggle-stacking` | Stage 1 OOF → Stage 2 meta-learner + residual stacking |
-| `/kaggle-pseudo-labeling` | Semi-supervised boost with fold-aware soft labels |
-| `/kaggle-extra-training` | Seed ensemble (50–100 seeds) + full-data retrain + submission checklist |
+## Domains
 
-## Competition Workflow
+### Kaggle — Competitive Machine Learning
+
+12 skills encoding the full Grandmaster competition workflow.
+
+| Command | When |
+|---------|------|
+| `/kaggle-grandmaster` | Always first — persona, judgment filters, shake-up avoidance |
+| `/kaggle-adversarial-validation` | Day 1 — detect train/test distribution shift |
+| `/kaggle-validation` | Day 1 — lock fold strategy before any modeling |
+| `/kaggle-eda` | Day 1–2 — distribution analysis, leakage scan, temporal patterns |
+| `/kaggle-baselines` | Day 2–3 — Ridge + XGBoost + LGB + CatBoost simultaneously |
+| `/kaggle-target-transform` | Day 2–3 — log/sqrt transforms, winsorization, calibration |
+| `/kaggle-optuna` | Day 3+ — Bayesian hyperparameter search + ensemble weight optimization |
+| `/kaggle-feature-engineering` | Day 3→N-5 — groupby aggs, interactions, CV-safe target encoding |
+| `/kaggle-hill-climbing` | Final week — greedy ensemble forward selection |
+| `/kaggle-stacking` | Final week — OOF meta-features → meta-learner |
+| `/kaggle-pseudo-labeling` | Final 3 days — soft labels on unlabeled test data |
+| `/kaggle-extra-training` | Final 24h — seed ensemble + full-data retrain + checklist |
+
+→ [Kaggle domain guide](domains/kaggle/README.md) · [Competition orchestration](domains/kaggle/ORCHESTRATION.md)
+
+---
+
+### Finance Research *(coming soon)*
+
+Skills for quantitative research, factor analysis, backtesting, and financial modeling.
+
+→ [Finance domain guide](domains/finance/README.md)
+
+---
+
+## Adding a New Domain
+
+1. Create `domains/<domain>/README.md` — describe the use case and skill chain
+2. Create skills in `skills/<domain>-<name>/SKILL.md` — follow the skill format
+3. PR to this repo
+
+Each skill is a markdown file with YAML frontmatter. Invoke with `/<domain>-<skill-name>`.
+
+## Structure
 
 ```
-/kaggle-grandmaster              ← always first
-/kaggle-adversarial-validation   ← check shift
-/kaggle-validation               ← lock folds
-/kaggle-eda                      ← understand data
-/kaggle-baselines                ← CV floor
-/kaggle-target-transform         ← if skewed/calibration needed
-/kaggle-optuna                   ← tune models
-/kaggle-feature-engineering      ← iterate until CV plateaus
-/kaggle-hill-climbing            ← final week
-/kaggle-stacking                 ← final week
-/kaggle-pseudo-labeling          ← final 3 days
-/kaggle-extra-training           ← final 24h
-```
-
-See [orchestration/ORCHESTRATION.md](orchestration/ORCHESTRATION.md) for the full phase-by-phase guide and competition-type adaptations (PlaygroundSeries, time series, featured competitions).
-
-## GPU Support
-
-All skills support GPU acceleration via cuDF, cuML, and CuPy with automatic CPU fallbacks. No GPU required — skills work on any machine.
-
-## Requirements
-
-Skills include ready-to-run Python templates. Recommended libraries:
-
-```
-pandas numpy scipy scikit-learn matplotlib seaborn
-xgboost lightgbm catboost
-cudf cuml cupy          # optional, for GPU acceleration
-torch                   # optional, for MLP baseline
+skills/              ← all skills, flat, domain-prefixed
+domains/             ← per-domain guides and orchestration
+  kaggle/
+  finance/
+.claude-plugin/      ← plugin manifest
+.claude/skills/      ← local dev copy (same as skills/)
 ```
