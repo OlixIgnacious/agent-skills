@@ -2,15 +2,22 @@
 
 A multi-domain Claude Code skill library — agents and skills organized by use case. Install once, use what's relevant.
 
+**macOS / Linux**
 ```bash
-# One-liner installer (interactive — picks domain + tool)
 curl -fsSL https://raw.githubusercontent.com/OlixIgnacious/agent-skills/main/install.sh | bash
 ```
 
-Or as a Claude Code plugin:
+**Windows** (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/OlixIgnacious/agent-skills/main/install.ps1 | iex
+```
+
+**Claude Code plugin**
 ```
 /plugin install OlixIgnacious/agent-skills
 ```
+
+The installer asks which domain (Kaggle / SDLC / Both) and which tool (Claude Code / Antigravity / Copilot / All), then downloads only the files you need.
 
 ---
 
