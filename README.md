@@ -1,9 +1,22 @@
 # Agent Skills
 
-A multi-domain Claude Code skill library. Install once, use the skills relevant to your work.
+A multi-domain Claude Code skill library — agents and skills organized by use case. Install once, use what's relevant.
 
 ```
 /plugin install OlixIgnacious/agent-skills
+```
+
+---
+
+## How It Works
+
+**Agents** are role-based AI workers Claude delegates to automatically based on your task. They have a specific persona, judgment filters, and tool access.
+
+**Skills** are slash commands you invoke explicitly for step-by-step procedures with code templates.
+
+```
+/kaggle-grandmaster          ← you invoke a skill
+"help me engineer features"  ← Claude delegates to an agent
 ```
 
 ---
@@ -12,68 +25,91 @@ A multi-domain Claude Code skill library. Install once, use the skills relevant 
 
 ### Kaggle — Competitive Machine Learning
 
-**Agents** (auto-delegated role workers):
+> 3 agents · 12 skills · Full GM workflow from EDA to final submission
+
+**Agents**
 
 | Agent | Role |
 |-------|------|
-| `kaggle-grandmaster` | Orchestrates the full competition workflow, decides phase and delegates |
-| `kaggle-feature-engineer` | Deep feature engineering with CV-delta tracking per batch |
-| `kaggle-ensemble-builder` | Hill climbing, stacking, Optuna weights, final blend |
+| `kaggle-grandmaster` | Competition orchestrator — decides phase, invokes skills, delegates to sub-agents |
+| `kaggle-feature-engineer` | Feature engineering specialist — CV-delta tracked batches, GPU-accelerated |
+| `kaggle-ensemble-builder` | Ensemble specialist — hill climbing, stacking, Optuna weight search, final blend |
 
-**Skills** (slash commands you invoke explicitly):
+**Skills**
 
-| Command | When |
-|---------|------|
-| `/kaggle-grandmaster` | Always first — persona, judgment filters, shake-up avoidance |
-| `/kaggle-adversarial-validation` | Day 1 — detect train/test distribution shift |
-| `/kaggle-validation` | Day 1 — lock fold strategy before any modeling |
-| `/kaggle-eda` | Day 1–2 — distribution analysis, leakage scan, temporal patterns |
-| `/kaggle-baselines` | Day 2–3 — Ridge + XGBoost + LGB + CatBoost simultaneously |
-| `/kaggle-target-transform` | Day 2–3 — log/sqrt transforms, winsorization, calibration |
-| `/kaggle-optuna` | Day 3+ — Bayesian hyperparameter search + ensemble weight optimization |
-| `/kaggle-feature-engineering` | Day 3→N-5 — groupby aggs, interactions, CV-safe target encoding |
-| `/kaggle-hill-climbing` | Final week — greedy ensemble forward selection |
-| `/kaggle-stacking` | Final week — OOF meta-features → meta-learner |
-| `/kaggle-pseudo-labeling` | Final 3 days — soft labels on unlabeled test data |
-| `/kaggle-extra-training` | Final 24h — seed ensemble + full-data retrain + checklist |
+| Command | Phase | What it does |
+|---------|-------|-------------|
+| `/kaggle-grandmaster` | Always | Persona, shake-up avoidance, problem reformulation heuristics |
+| `/kaggle-adversarial-validation` | Day 1 | Detect train/test distribution shift before locking folds |
+| `/kaggle-validation` | Day 1 | Lock fold strategy — KFold / TimeSeriesSplit / GroupKFold / Multilabel |
+| `/kaggle-eda` | Day 1–2 | Distribution analysis, leakage scan, temporal pattern detection |
+| `/kaggle-baselines` | Day 2–3 | Ridge + XGBoost + LightGBM + CatBoost with GPU backends |
+| `/kaggle-target-transform` | Day 2–3 | Log/sqrt transforms, winsorization, isotonic calibration |
+| `/kaggle-optuna` | Day 3+ | Bayesian hyperparameter search (TPE) + ensemble weight optimization |
+| `/kaggle-feature-engineering` | Day 3→N-5 | Groupby aggs, interactions, CV-safe target encoding, lag/rolling |
+| `/kaggle-hill-climbing` | Final week | Greedy ensemble selection + scipy/Optuna weight optimization |
+| `/kaggle-stacking` | Final week | Stage 1 OOF → Stage 2 meta-learner + residual stacking |
+| `/kaggle-pseudo-labeling` | Final 3 days | Fold-aware soft labels on unlabeled test data |
+| `/kaggle-extra-training` | Final 24h | Seed ensemble + full-data retrain + submission checklist |
 
-→ [Kaggle domain guide](domains/kaggle/README.md) · [Competition orchestration](domains/kaggle/ORCHESTRATION.md)
+→ [Domain guide](domains/kaggle/README.md) · [Orchestration](domains/kaggle/ORCHESTRATION.md)
 
 ---
 
 ### Finance Research *(coming soon)*
 
-**Agents:** `finance-researcher` — quantitative research, factor analysis, portfolio construction
+> 1 agent · skills planned · Quant research, factor analysis, backtesting, portfolio construction
 
-→ [Finance domain guide](domains/finance/README.md)
+**Agents**
+
+| Agent | Role |
+|-------|------|
+| `finance-researcher` | Quantitative research — factor IC analysis, walk-forward backtesting, risk |
+
+→ [Domain guide](domains/finance/README.md)
 
 ---
 
-## Adding a New Domain
-
-1. Create `domains/<domain>/README.md` — describe the use case and skill chain
-2. Create skills in `skills/<domain>-<name>/SKILL.md` — follow the skill format
-3. PR to this repo
-
-Each skill is a markdown file with YAML frontmatter. Invoke with `/<domain>-<skill-name>`.
-
-## Adding a Domain
-
-1. `agents/<domain>/<domain>-<role>.md` — agent persona with `prompt:` frontmatter
-2. `skills/<domain>-<name>/SKILL.md` — slash-command skills
-3. `domains/<domain>/README.md` + `ORCHESTRATION.md` — workflow guide
-
-## Structure
+## Repository Structure
 
 ```
-agents/              ← role-based AI workers (auto-delegated)
+agents/                  ← role-based AI workers (auto-delegated)
+  kaggle/
+    kaggle-grandmaster.md
+    kaggle-feature-engineer.md
+    kaggle-ensemble-builder.md
+  finance/
+    finance-researcher.md
+
+skills/                  ← slash-command skills, domain-prefixed
+  kaggle-grandmaster/
+  kaggle-adversarial-validation/
+  kaggle-validation/
+  kaggle-eda/
+  kaggle-baselines/
+  kaggle-target-transform/
+  kaggle-optuna/
+  kaggle-feature-engineering/
+  kaggle-hill-climbing/
+  kaggle-stacking/
+  kaggle-pseudo-labeling/
+  kaggle-extra-training/
+
+domains/                 ← per-domain workflow guides and orchestration
   kaggle/
   finance/
-skills/              ← slash-command skills, domain-prefixed
-  kaggle-*/
-domains/             ← per-domain workflow guides
-  kaggle/
-  finance/
-.claude-plugin/      ← plugin manifest
-.claude/skills/      ← local dev copy
+
+.claude-plugin/          ← plugin manifest
+  plugin.json
 ```
+
+---
+
+## Contributing a Domain
+
+1. `agents/<domain>/<domain>-<role>.md` — agent with `name`, `description`, `prompt`, `tools` frontmatter
+2. `skills/<domain>-<name>/SKILL.md` — skill with `description`, `disable-model-invocation`, `allowed-tools` frontmatter
+3. `domains/<domain>/README.md` — use case overview and skill chain
+4. `domains/<domain>/ORCHESTRATION.md` — phase-by-phase workflow
+
+See the Kaggle domain as the reference implementation.
