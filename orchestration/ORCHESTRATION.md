@@ -14,15 +14,18 @@ Objective (Win the competition metric)
 ## Quick Start
 
 ```
-/kaggle-grandmaster     ← activate at session start, always
-/kaggle-validation      ← lock folds before anything else
-/kaggle-eda             ← understand your data
-/kaggle-baselines       ← establish CV floor
-/kaggle-feature-engineering  ← iterate until CV plateaus
-/kaggle-hill-climbing   ← combine models (final week)
-/kaggle-stacking        ← learned ensembling (final week)
-/kaggle-pseudo-labeling ← semi-supervised boost (final 3 days)
-/kaggle-extra-training  ← seeds + full retrain (final 24h)
+/kaggle-grandmaster              ← activate at session start, always
+/kaggle-adversarial-validation   ← check train/test distribution shift
+/kaggle-validation               ← lock folds before anything else
+/kaggle-eda                      ← understand your data
+/kaggle-baselines                ← establish CV floor
+/kaggle-optuna                   ← tune top models
+/kaggle-feature-engineering      ← iterate until CV plateaus
+/kaggle-target-transform         ← if target is skewed / needs calibration
+/kaggle-hill-climbing            ← combine models (final week)
+/kaggle-stacking                 ← learned ensembling (final week)
+/kaggle-pseudo-labeling          ← semi-supervised boost (final 3 days)
+/kaggle-extra-training           ← seeds + full retrain (final 24h)
 ```
 
 ## Competition Phase Map
@@ -34,10 +37,11 @@ Objective (Win the competition metric)
 | Skill | Output |
 |-------|--------|
 | `/kaggle-grandmaster` | Persona active, competition context logged |
-| `/kaggle-eda` | Distribution shift, temporal signal, leakage scan |
+| `/kaggle-adversarial-validation` | Distribution shift check; adversarial AUC; high-shift features identified |
+| `/kaggle-eda` | Temporal signal, leakage scan, target analysis |
 | `/kaggle-validation` | Fold type chosen, `train_folds.csv` saved |
 
-**Decision gate:** Cannot proceed without `train_folds.csv` and a confirmed fold type.
+**Decision gate:** Cannot proceed without `train_folds.csv` and a confirmed fold type. If adversarial AUC > 0.70, use adversarial-based validation set instead of random folds.
 
 ---
 
@@ -48,6 +52,8 @@ Objective (Win the competition metric)
 | Skill | Output |
 |-------|--------|
 | `/kaggle-baselines` | XGBoost + LGB + CatBoost OOF scores, OOF files |
+| `/kaggle-target-transform` | Log/sqrt transform if target is skewed; winsorize outliers |
+| `/kaggle-optuna` | Tuned hyperparameters for top 1–2 model families |
 | `/kaggle-feature-engineering` | Feature batches measured by CV delta |
 
 **Iteration loop:** Alternate between feature engineering and baseline retraining. Stop when 2 consecutive feature batches yield < +0.001 CV improvement.

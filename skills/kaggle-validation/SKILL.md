@@ -13,6 +13,33 @@ effort: high
 
 Immediately after EDA, before writing a single model. Changing validation strategy mid-competition destroys comparability of all prior experiments. Lock it once and never change it.
 
+## Step 0 — Run Adversarial Validation First
+
+Before choosing a fold type, check if train and test come from the same distribution. A high adversarial AUC means random folds will mislead you.
+
+```python
+# Quick check — run /kaggle-adversarial-validation for full analysis
+import lightgbm as lgb
+import numpy as np
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import cross_val_score
+
+train = pd.read_csv("train.csv")
+test  = pd.read_csv("test.csv")
+shared = [c for c in train.columns if c in test.columns and c not in ["id", "target"]]
+
+adv_X = pd.concat([train[shared].assign(is_test=0),
+                   test[shared].assign(is_test=1)], ignore_index=True)
+adv_y = adv_X.pop("is_test")
+
+adv_score = cross_val_score(
+    lgb.LGBMClassifier(n_estimators=100, verbose=-1),
+    adv_X, adv_y, cv=5, scoring="roc_auc"
+).mean()
+print(f"Adversarial AUC: {adv_score:.4f}")
+# < 0.55: proceed normally | > 0.70: run /kaggle-adversarial-validation
+```
+
 ## Step 1 — Choose Your Fold Type
 
 **Decision tree:**
@@ -24,12 +51,27 @@ Is the test set drawn from a future time period?
 │             └── YES → GroupTimeSeriesSplit (rare, requires custom implementation)
 └── NO  → Are groups present that must not leak across folds?
           ├── YES → GroupKFold(n_splits=5, group_col="<id_column>")
-          └── NO  → Is it classification with imbalanced classes?
-                    ├── YES → StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-                    └── NO  → KFold(n_splits=5, shuffle=True, random_state=42)
+          └── NO  → Is it multi-label classification?
+                    ├── YES → MultilabelStratifiedKFold (iterative-stratification library)
+                    └── NO  → Is it classification with imbalanced classes?
+                              ├── YES → StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+                              └── NO  → KFold(n_splits=5, shuffle=True, random_state=42)
 ```
 
 **Use 5 folds as the default.** 10 folds only when dataset < 5000 rows.
+
+### MultilabelStratifiedKFold
+
+```python
+# pip install iterative-stratification
+from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
+
+mlskf = MultilabelStratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+y_multilabel = train[label_cols].values  # shape: (n_samples, n_labels)
+
+for fold, (tr_idx, val_idx) in enumerate(mlskf.split(train, y_multilabel)):
+    train.loc[val_idx, "fold"] = fold
+```
 
 ## Step 2 — Lock Fold Indices Early
 

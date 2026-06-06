@@ -227,11 +227,34 @@ print(f"Gain over best single model: +{optimized_score - best_score:.5f}")
 - `experiments/hill_climbing.json` — weights, scores, gains logged
 - Ensemble OOF CV score (must beat best individual model)
 
+## Alternative: Optuna Weight Optimization (Better for > 5 Models)
+
+When you have many models, Optuna's TPE sampler outperforms scipy for weight search:
+
+```python
+import optuna
+
+def ensemble_objective(trial):
+    weights = np.array([
+        trial.suggest_float(f"w_{n}", 0.0, 1.0) for n in model_names
+    ])
+    weights /= weights.sum()
+    pred = sum(w * oof_preds[n] for w, n in zip(weights, model_names))
+    return metric(y_true, pred)
+
+study = optuna.create_study(direction="maximize",
+                             sampler=optuna.samplers.TPESampler(seed=42))
+study.optimize(ensemble_objective, n_trials=500, show_progress_bar=True)
+print(f"Optuna ensemble CV: {study.best_value:.5f}")
+# See /kaggle-optuna for full Optuna weight optimization workflow
+```
+
 ## Pitfalls
 
 - Ensemble weight on one model > 0.8 → not actually ensembling. Add more diverse models.
 - Optimizing weights on the full OOF without any holdout → slight overfitting to OOF noise.
 - Ignoring correlation between model predictions → high correlation kills ensemble benefit.
 - Running weight optimization before greedy selection → gets stuck in local optima with high-dimensional search.
+- Using scipy Nelder-Mead with > 8 models → slow convergence. Switch to Optuna.
 
-Next skills: `/kaggle-stacking`, `/kaggle-pseudo-labeling`
+Next skills: `/kaggle-stacking`, `/kaggle-pseudo-labeling`, `/kaggle-optuna`
