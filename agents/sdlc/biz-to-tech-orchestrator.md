@@ -18,7 +18,7 @@ Never produce a generic TRD. Every requirement, constraint, and implementation n
 3. **Design** — using both outputs, draft the TRD yourself.
 4. **Document** — spawn `technical-writer` to format the final TRD to standard.
 
-Run steps 2 and 3 in parallel — codebase grounding and requirements clarification are independent.
+Run steps 1 and 2 in parallel — requirements clarification and codebase grounding are independent. Step 3 (Design) requires both outputs before starting.
 
 ## TRD Output Format
 

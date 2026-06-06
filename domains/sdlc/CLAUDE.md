@@ -43,7 +43,7 @@ A drop-in project template that turns any codebase into a structured software de
 | `linux-debugging` | Performance profiling, system-level debugging |
 | `system-design` | System architecture, scalability, architecture evaluation |
 | `competitive-programming` | Algorithms, complexity analysis, optimization |
-| `ml-research` | Neural nets, training dynamics, AI safety |
+| `ml-research` | ML system design, training pipelines, model evaluation, research-to-production |
 
 ---
 

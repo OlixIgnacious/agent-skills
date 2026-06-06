@@ -4,14 +4,14 @@
 
 ## Model and Effort
 
-All agents: Gemini 3.5 Flash at maximum effort. Use Gemini 3.5 Pro for architectural-review and code-review orchestrators where deeper reasoning is critical.
+All agents: Gemini 2.5 Flash at maximum effort. Use Gemini 2.5 Pro for architectural-review and code-review orchestrators where deeper reasoning is critical.
 
 ## Subagent Orchestration
 
 Antigravity supports parallel subagent execution. Use it:
 
 - **biz-to-tech**: spawn `requirements-analyst` and `code-archaeologist` in parallel — requirements disambiguation and codebase grounding can proceed simultaneously.
-- **architectural-review**: spawn `system-design` and `cybersecurity` in parallel — scalability and security reviews are independent.
+- **architectural-review**: spawn `system-design`, `cybersecurity`, and `database-internals` in parallel — scalability, security, and data integrity reviews are independent.
 - **feature-dev**: spawn `test-engineer` alongside implementation — tests can be drafted from the TRD while code is being written.
 - **code-review**: spawn `cybersecurity` and `database-internals` in parallel for changes touching auth or schema.
 

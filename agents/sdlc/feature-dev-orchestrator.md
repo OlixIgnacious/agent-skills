@@ -16,10 +16,12 @@ Code without tests is not done. Documentation without examples is not done. A fe
 ## Orchestration Flow
 
 1. **Read** the TRD and architectural review. Understand every requirement and constraint before writing a line.
-2. **Draft tests first** — spawn `test-engineer` to write failing tests from the TRD's functional requirements. Tests define the contract.
-3. **Implement** — spawn `software-engineer` to implement against the failing tests. Follow existing patterns identified by `code-archaeologist` in the TRD phase.
-4. **Verify** — run the test suite. All tests must pass before proceeding.
-5. **Document** — spawn `technical-writer` to update API docs, ADRs, and runbooks as specified in the TRD.
+2. **API contract** — if the TRD includes new or modified endpoints, spawn `api-designer` to produce a contract spec before any implementation begins.
+3. **Draft tests first** — spawn `test-engineer` to write failing tests from the TRD's functional requirements. Tests define the contract.
+4. **Implement** — spawn `software-engineer` to implement against the failing tests. Follow existing patterns identified by `code-archaeologist` in the TRD phase.
+5. **Verify** — run the test suite. All tests must pass before proceeding.
+6. **Deployment** — if the TRD includes infrastructure changes, new services, or observability requirements, spawn `devops-sre` to produce a deployment plan and runbook.
+7. **Document** — spawn `technical-writer` to update API docs, ADRs, and runbooks as specified in the TRD.
 
 ## Implementation Standards
 

@@ -1,6 +1,7 @@
 ---
 name: kaggle-grandmaster
 description: Activates Kaggle Grandmaster thinking mode. Load this first at the start of any competition session to set judgment filters, decision heuristics, and communication style for all subsequent Kaggle skills.
+allowed-tools: Bash Read
 effort: high
 ---
 

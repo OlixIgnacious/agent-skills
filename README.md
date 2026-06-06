@@ -108,6 +108,24 @@ agents/                  ← role-based AI workers (auto-delegated)
     kaggle-grandmaster.md
     kaggle-feature-engineer.md
     kaggle-ensemble-builder.md
+  sdlc/
+    biz-to-tech-orchestrator.md
+    architectural-review-orchestrator.md
+    feature-dev-orchestrator.md
+    code-review-orchestrator.md
+    requirements-analyst.md
+    code-archaeologist.md
+    api-designer.md
+    test-engineer.md
+    technical-writer.md
+    software-engineer.md
+    database-internals.md
+    devops-sre.md
+    cybersecurity.md
+    linux-debugging.md
+    system-design.md
+    competitive-programming.md
+    ml-research.md
   finance/
     finance-researcher.md
 
@@ -127,6 +145,7 @@ skills/                  ← slash-command skills, domain-prefixed
 
 domains/                 ← per-domain workflow guides and orchestration
   kaggle/
+  sdlc/
   finance/
 
 .claude-plugin/          ← plugin manifest
@@ -137,9 +156,9 @@ domains/                 ← per-domain workflow guides and orchestration
 
 ## Contributing a Domain
 
-1. `agents/<domain>/<domain>-<role>.md` — agent with `name`, `description`, `prompt`, `tools` frontmatter
-2. `skills/<domain>-<name>/SKILL.md` — skill with `description`, `disable-model-invocation`, `allowed-tools` frontmatter
-3. `domains/<domain>/README.md` — use case overview and skill chain
-4. `domains/<domain>/ORCHESTRATION.md` — phase-by-phase workflow
+1. `agents/<domain>/<domain>-<role>.md` — agent with `name`, `description`, `model`, `tools` frontmatter
+2. `skills/<domain>-<name>/SKILL.md` — skill with `description`, `disable-model-invocation`, `allowed-tools` frontmatter (omit `disable-model-invocation` for persona/orchestrator skills)
+3. `domains/<domain>/README.md` — use case overview, file list, and skill chain
+4. `domains/<domain>/ORCHESTRATION.md` — phase-by-phase workflow *(optional — see Kaggle for an example)*
 
-See the Kaggle domain as the reference implementation.
+See the Kaggle domain as the reference implementation for skills; the SDLC domain for agents.

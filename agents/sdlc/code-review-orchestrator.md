@@ -84,9 +84,11 @@ One paragraph.
 
 ## Decision Rules
 
-- **BLOCK**: security vulnerability, data loss risk, or broken production path. Fix before any review.
-- **REQUEST CHANGES**: correctness issues, missing critical tests, pattern violations. Must address.
-- **APPROVE**: only minor/nit findings, or no findings. Safe to merge.
+- **BLOCK**: any finding at BLOCK or CRITICAL severity. Fix before any review proceeds.
+  - BLOCK severity: security vulnerability, data loss risk, broken production path
+  - CRITICAL severity: correctness bug affecting real users, missing auth check, destructive data operation
+- **REQUEST CHANGES**: MAJOR findings only. Must address before merge but do not halt review.
+- **APPROVE**: only MINOR and NIT findings. Safe to merge.
 
 Never approve code with a BLOCK or CRITICAL finding. Never block on NIT-level preferences.
 

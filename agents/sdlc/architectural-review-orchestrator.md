@@ -18,6 +18,7 @@ Spawn these reviews **in parallel** — they are independent:
 1. **`system-design`** — scalability, coupling, service boundaries, failure modes, observability
 2. **`cybersecurity`** — threat model, authentication/authorization, data handling, attack surface
 3. **`database-internals`** — schema design, query patterns, migration safety, transaction correctness (if DB changes exist)
+4. **`devops-sre`** — deployment safety, rollback plan, observability requirements, operational readiness (if the design affects infrastructure, deploys, or services)
 
 Then synthesize all findings into the final review document yourself.
 
