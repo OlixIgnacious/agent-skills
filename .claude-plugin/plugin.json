@@ -10,7 +10,7 @@
   "tags": ["kaggle", "machine-learning", "data-science", "ensemble", "feature-engineering", "gpu", "cudf", "xgboost", "lightgbm", "optuna", "adversarial-validation"],
   "source": {
     "source": "git-subdir",
-    "url": "https://github.com/ashwini-sharma/agent-skills",
+    "url": "https://github.com/OlixIgnacious/agent-skills",
     "path": ".",
     "ref": "main"
   }
