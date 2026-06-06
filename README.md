@@ -12,7 +12,15 @@ A multi-domain Claude Code skill library. Install once, use the skills relevant 
 
 ### Kaggle — Competitive Machine Learning
 
-12 skills encoding the full Grandmaster competition workflow.
+**Agents** (auto-delegated role workers):
+
+| Agent | Role |
+|-------|------|
+| `kaggle-grandmaster` | Orchestrates the full competition workflow, decides phase and delegates |
+| `kaggle-feature-engineer` | Deep feature engineering with CV-delta tracking per batch |
+| `kaggle-ensemble-builder` | Hill climbing, stacking, Optuna weights, final blend |
+
+**Skills** (slash commands you invoke explicitly):
 
 | Command | When |
 |---------|------|
@@ -35,7 +43,7 @@ A multi-domain Claude Code skill library. Install once, use the skills relevant 
 
 ### Finance Research *(coming soon)*
 
-Skills for quantitative research, factor analysis, backtesting, and financial modeling.
+**Agents:** `finance-researcher` — quantitative research, factor analysis, portfolio construction
 
 → [Finance domain guide](domains/finance/README.md)
 
@@ -49,13 +57,23 @@ Skills for quantitative research, factor analysis, backtesting, and financial mo
 
 Each skill is a markdown file with YAML frontmatter. Invoke with `/<domain>-<skill-name>`.
 
+## Adding a Domain
+
+1. `agents/<domain>/<domain>-<role>.md` — agent persona with `prompt:` frontmatter
+2. `skills/<domain>-<name>/SKILL.md` — slash-command skills
+3. `domains/<domain>/README.md` + `ORCHESTRATION.md` — workflow guide
+
 ## Structure
 
 ```
-skills/              ← all skills, flat, domain-prefixed
-domains/             ← per-domain guides and orchestration
+agents/              ← role-based AI workers (auto-delegated)
+  kaggle/
+  finance/
+skills/              ← slash-command skills, domain-prefixed
+  kaggle-*/
+domains/             ← per-domain workflow guides
   kaggle/
   finance/
 .claude-plugin/      ← plugin manifest
-.claude/skills/      ← local dev copy (same as skills/)
+.claude/skills/      ← local dev copy
 ```
