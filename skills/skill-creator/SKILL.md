@@ -1,110 +1,111 @@
 ---
 name: skill-creator
-description: Creates new skills and agents for this repo. Gathers requirements, inspects existing examples, writes correctly structured SKILL.md or agent .md files, places them in the right directories, and updates the README. Use this whenever you want to add a new capability to the library.
+description: Creates new skills and agents for any tool in this library — Claude Code (SKILL.md + agents), Google Antigravity (AGENTS.md + GEMINI.md), and GitHub Copilot (.github/copilot-instructions.md). Gathers requirements, inspects existing examples, writes correctly structured files, places them in the right directories, and updates the README.
 allowed-tools: Read Bash Write Edit
 effort: high
 ---
 
 # Skill: Skill Creator
 
-A meta-skill that builds new skills and agents for the agent-skills library, following the repo's own conventions and structure.
+A meta-skill that builds new skills and agents for the agent-skills library across all supported tools.
+
+## Supported Tools
+
+| Tool | File format | Invocation |
+|------|-------------|------------|
+| **Claude Code** | `SKILL.md` (slash commands) + `agents/<domain>/<name>.md` | `/skill-name` or auto-delegated |
+| **Google Antigravity** | `AGENTS.md` (universal rules) + `GEMINI.md` (agy-specific) | `agy --agent <name> "..."` |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | Inline suggestion context |
+| **All tools** | `AGENTS.md` | Universal — read by Antigravity, Cursor, and Claude Code |
+
+---
 
 ## Step 0 — Gather Requirements
 
 Before writing anything, establish:
 
-1. **Type:** Skill (slash command) or Agent (auto-delegated worker)?
-2. **Domain:** Which domain does this belong to? (`kaggle`, `sdlc`, `finance`, or a new domain?)
-3. **Name:** What is it called? Use kebab-case, domain-prefixed for skills (`kaggle-*`, `sdlc-*`).
-4. **Purpose:** What problem does it solve? One clear sentence.
-5. **Invocation model:** For skills — does the user invoke code directly (`disable-model-invocation: true`) or does the model think and act (`disable-model-invocation` omitted)?
-6. **Tools needed:** Which tools does it use? (`Read`, `Bash`, `Write`, `Edit`)
+1. **Target tool(s):** Claude Code only? Antigravity? Copilot? All tools?
+2. **Type:** Skill (slash command) / Agent (auto-delegated) / Universal rule / Copilot instruction block?
+3. **Domain:** `kaggle`, `sdlc`, `finance`, or a new domain?
+4. **Name:** kebab-case, domain-prefixed for skills (`kaggle-*`, `sdlc-*`)
+5. **Purpose:** What problem does it solve? One sentence.
+6. **Tools needed:** `Read`, `Bash`, `Write`, `Edit` — include only what is actually used
 7. **Effort level:** `low` | `medium` | `high` | `xhigh`
 
-If any of these are unclear, ask before proceeding.
+If any are unclear, ask before proceeding.
+
+---
 
 ## Step 1 — Study Existing Examples
 
-Before writing, read relevant examples from the repo:
+Read the closest existing example before writing anything new:
 
 ```bash
-# For a new skill — read two existing skills as reference
-# Procedural/code skill:
+# Claude Code skill — procedural (disable-model-invocation: true)
 cat .claude/skills/kaggle-validation/SKILL.md
 
-# Persona/orchestrator skill:
+# Claude Code skill — orchestrator/persona (no disable-model-invocation)
 cat .claude/skills/sdlc-biz-to-tech/SKILL.md
 
-# For a new agent — read two existing agents as reference
-# Orchestrator agent:
+# Claude Code agent — orchestrator
 cat agents/sdlc/biz-to-tech-orchestrator.md
 
-# Domain expert agent:
+# Claude Code agent — domain expert
 cat agents/sdlc/software-engineer.md
+
+# Antigravity config
+cat domains/sdlc/GEMINI.md
+
+# Universal cross-tool rules
+cat domains/sdlc/AGENTS.md
+
+# GitHub Copilot instructions
+cat domains/sdlc/copilot-instructions.md
 ```
 
-Match the voice, structure depth, and content style of whichever example is closest to the new capability.
+---
 
-## Step 2 — Write the Skill or Agent
+## Step 2 — Write the Output
 
-### Skill Frontmatter (SKILL.md)
+### A. Claude Code Skill (SKILL.md)
 
+**Frontmatter:**
 ```yaml
 ---
-name: <domain>-<name>              # kebab-case, domain-prefixed
-description: <one clear sentence>  # shown in /skills list — make it specific
-disable-model-invocation: true     # ONLY for procedural skills with code templates
-                                   # OMIT for persona, orchestrator, or agentic skills
-allowed-tools: Read Bash Write Edit  # include only what is actually needed
-effort: high                       # low | medium | high | xhigh
+name: <domain>-<name>
+description: <one clear sentence — shown in /skills list>
+disable-model-invocation: true   # ONLY for procedural/code-template skills
+                                 # OMIT for persona, orchestrator, agentic skills
+allowed-tools: Read Bash Write Edit
+effort: high
 ---
 ```
 
-**When to set `disable-model-invocation: true`:**
-- The skill is a library of code templates, checklists, or procedures the user runs
+**`disable-model-invocation: true` when:**
+- Skill is a library of code templates, checklists, step-by-step procedures the user runs directly
 - Examples: `kaggle-validation`, `kaggle-baselines`, `kaggle-hill-climbing`
 
-**When to omit `disable-model-invocation`:**
-- The skill sets a persona, activates a thinking mode, or delegates to agents
+**Omit `disable-model-invocation` when:**
+- Skill activates a persona, sets thinking mode, or delegates to agents
 - Examples: `kaggle-grandmaster`, `sdlc-biz-to-tech`, `sdlc-code-review`
 
-### Agent Frontmatter (agents/<domain>/<name>.md)
-
-```yaml
----
-name: <name>                       # kebab-case, no domain prefix
-description: <one clear sentence starting with "Delegate to this agent" or "Spawned by...">
-model: opus                        # always opus for domain experts and orchestrators
-tools: ["Read", "Bash", "Write", "Edit"]  # only what this agent actually needs
----
-```
-
-**Description convention:**
-- Orchestrators: `"Delegate to this agent when..."`
-- Specialists/experts spawned by orchestrators: `"Spawned by <orchestrator>. ..."`
-
-### Content Structure
-
-**For a procedural skill** (disable-model-invocation: true):
+**Content structure — procedural skill:**
 ```markdown
 # Skill: <Name>
 **One-line context — when and why to use this**
 
 ## When to Use
-## Step 1 — <First action>
-[code blocks with copy-paste ready templates]
+## Step 1 — <Action>
+[copy-paste ready code blocks]
 ## Step 2 — <Next action>
-[code blocks]
 ## Checklist
 - [ ] item
 ## Output
-- file produced, metric logged, etc.
 ## Pitfalls
-- common mistakes
-Next skill: `/<next-skill-name>`
+Next skill: `/<next-skill>`
 ```
 
-**For a persona/orchestrator skill** (no disable-model-invocation):
+**Content structure — persona/orchestrator skill:**
 ```markdown
 # Skill: <Name>
 **Entry point for Phase N / Activates <persona> mode**
@@ -112,103 +113,232 @@ Next skill: `/<next-skill-name>`
 ## What This Does
 ## Input
 ## What Gets Produced
-## Orchestration (if it delegates to agents)
-[indented tree of agents spawned]
+## Orchestration
+[agent tree]
 ## Next Phase
 ## Rules
 ```
 
-**For an agent**:
+---
+
+### B. Claude Code Agent (agents/<domain>/<name>.md)
+
+**Frontmatter:**
+```yaml
+---
+name: <name>
+description: <"Delegate to this agent when..." or "Spawned by <orchestrator>. ...">
+model: opus
+tools: ["Read", "Bash", "Write", "Edit"]
+---
+```
+
+**Description convention:**
+- Orchestrators: `"Delegate to this agent when [trigger condition]"`
+- Specialists spawned by orchestrators: `"Spawned by <orchestrator>. [what it does]"`
+
+**Content structure:**
 ```markdown
 You are a <role> with expertise in <domain>. <One sentence mandate>.
 
 ## Mandate / Core Principles
-## <Main section — the agent's primary analytical framework>
-## <Secondary section — specific techniques or rules>
+[What success looks like for this agent]
+
+## <Primary analytical framework>
+[The main thing this agent does — decision trees, review criteria, etc.]
+
+## <Secondary section>
+[Techniques, standards, or specific rules]
+
 ## Rules
-- Bullet list of non-negotiable constraints
+- Non-negotiable constraints, bullet list
 ```
+
+---
+
+### C. Google Antigravity — GEMINI.md Addition
+
+When adding a new domain or agent pattern to Antigravity, append to the domain's `GEMINI.md`:
+
+```markdown
+## <New Section Name>
+
+[Antigravity-specific behavior for this agent/domain]
+
+### Parallel Subagent Pattern
+- **<orchestrator>**: spawn `<agent-a>` and `<agent-b>` in parallel — [reason they're independent]
+
+### Agy CLI Invocation
+```bash
+agy --agent <agent-name> "<typical prompt>"
+agy "<natural language trigger>"
+```
+
+### Mission Control Task
+| Task name | Agent | Trigger |
+|-----------|-------|---------|
+| `<task>` | `<agent-name>` | <when to trigger> |
+```
+
+---
+
+### D. Universal Cross-Tool Rules — AGENTS.md Addition
+
+When adding a new agent role that all tools should know about, add it to the relevant `AGENTS.md`:
+
+```markdown
+### <Agent Role>
+- **<agent-name>** — <one-line description of domain and authority>
+```
+
+If it's an orchestrator, add it to the orchestrators section and describe what it owns:
+```markdown
+- **<name>-orchestrator** — owns <phase name>; entry point for [trigger]
+```
+
+If it's a specialist or domain expert, add to the correct section.
+
+---
+
+### E. GitHub Copilot — copilot-instructions.md Addition
+
+When adding a new domain or instruction block for Copilot:
+
+```markdown
+## <Domain or Topic Name>
+
+- <Rule 1 — specific, actionable, no vague advice>
+- <Rule 2>
+- <Rule 3>
+
+<!-- Customize per repository -->
+- <Stack-specific context>: [fill in]
+```
+
+Copilot rules must be:
+- **Specific** — "Prefer explicit column lists over SELECT *" not "write good SQL"
+- **Actionable** — something Copilot can apply to a suggestion
+- **Non-overlapping** — don't repeat what's in the Code Style section
+
+---
 
 ## Step 3 — Place Files
 
-### New Skill
+### Claude Code skill:
 ```bash
-# Primary (local dev use in this repo)
 mkdir -p .claude/skills/<skill-name>/
 # Write SKILL.md to .claude/skills/<skill-name>/SKILL.md
 
-# Mirror (plugin distribution)
+# Mirror for plugin users
 mkdir -p skills/<skill-name>/
 cp .claude/skills/<skill-name>/SKILL.md skills/<skill-name>/SKILL.md
 ```
 
-### New Agent
+### Claude Code agent:
 ```bash
-# Agents live only in agents/<domain>/
 mkdir -p agents/<domain>/
-# Write agent .md to agents/<domain>/<name>.md
+# Write to agents/<domain>/<name>.md
 ```
 
-### New Domain
-If this is the first skill/agent in a new domain:
+### Antigravity addition:
+```bash
+# Append to the relevant domain's GEMINI.md
+# Edit domains/<domain>/GEMINI.md
+```
+
+### Universal rules addition:
+```bash
+# Edit domains/<domain>/AGENTS.md
+```
+
+### Copilot addition:
+```bash
+# Edit domains/<domain>/copilot-instructions.md
+```
+
+### New domain (first skill/agent in that domain):
 ```bash
 mkdir -p agents/<domain>/
 mkdir -p domains/<domain>/
-# Create domains/<domain>/README.md with: purpose, files, skill chain
+# Create domains/<domain>/README.md
+# Create domains/<domain>/AGENTS.md
+# Create domains/<domain>/CLAUDE.md
+# Create domains/<domain>/GEMINI.md        # if Antigravity support wanted
+# Create domains/<domain>/copilot-instructions.md  # if Copilot support wanted
 ```
+
+---
 
 ## Step 4 — Update README.md
 
-Add the new skill to the correct table in README.md:
+- **New Claude Code skill** → add row to the correct Skills table
+- **New Claude Code agent** → add row to the correct Agents table
+- **New domain** → add a full domain section (agents table + skills table + cross-tool files table)
+- **Repo structure tree** → add the new file/directory
 
-- **Kaggle skill** → add a row to the Kaggle Skills table
-- **SDLC skill** → add a row to the SDLC Skills table
-- **New domain** → add a new domain section with agents and skills tables
-- **New agent** → add a row to the correct Agents table in the domain section
-- **Repo structure tree** → add the new file/directory to the tree
+---
 
 ## Step 5 — Verify
 
 ```bash
-# Confirm files exist in both locations (for skills)
-ls .claude/skills/<skill-name>/
-ls skills/<skill-name>/
+# Skill: both copies exist
+ls .claude/skills/<skill-name>/SKILL.md
+ls skills/<skill-name>/SKILL.md
 
-# Confirm frontmatter is valid (no tabs, proper YAML)
-head -10 .claude/skills/<skill-name>/SKILL.md
-
-# Confirm agent file exists
+# Agent: file exists
 ls agents/<domain>/<name>.md
 
-# Check README was updated
-grep "<skill-name>" README.md
+# Frontmatter looks valid
+head -10 .claude/skills/<skill-name>/SKILL.md
+
+# README was updated
+grep "<name>" README.md
 ```
+
+---
 
 ## Step 6 — Report
 
-After creating the file(s), report:
-
+**For a Claude Code skill:**
 ```
-Created: .claude/skills/<name>/SKILL.md
+Created:  .claude/skills/<name>/SKILL.md
 Mirrored: skills/<name>/SKILL.md
-Updated: README.md
+Updated:  README.md
 
 Invoke with: /<name>
 ```
 
-Or for an agent:
+**For a Claude Code agent:**
 ```
 Created: agents/<domain>/<name>.md
 
-The agent will be auto-delegated when: <describe trigger>
-It can also be spawned explicitly by: <parent orchestrator if applicable>
+Auto-delegated when: <trigger description>
+Spawned by: <parent orchestrator, if applicable>
 ```
 
-## Common Mistakes to Avoid
+**For an Antigravity addition:**
+```
+Updated: domains/<domain>/GEMINI.md
+
+Invoke with: agy --agent <name> "<prompt>"
+```
+
+**For a Copilot addition:**
+```
+Updated: domains/<domain>/copilot-instructions.md
+
+Users copy this to: .github/copilot-instructions.md
+```
+
+---
+
+## Common Mistakes
 
 - **Tabs in YAML frontmatter** — YAML requires spaces. Tabs silently break parsing.
-- **`disable-model-invocation: true` on an orchestrator skill** — this prevents the model from acting, making the skill useless for delegation.
-- **Missing the mirror copy** — if `.claude/skills/` is updated but `skills/` is not, plugin users won't get the new skill.
-- **Agent description that doesn't start with "Delegate to" or "Spawned by"** — breaks discoverability in the AGENTS.md ecosystem.
-- **Listing tools the agent doesn't actually need** — keep tool lists minimal; unnecessary tools are security surface area.
-- **Creating an agent with no parent orchestrator and no skill entry point** — it will never be invoked. Either wire it into an orchestrator or create a matching skill.
+- **`disable-model-invocation: true` on an orchestrator skill** — the model can't act; skill becomes a static doc.
+- **Missing the `skills/` mirror** — plugin users won't get the new skill.
+- **Agent description not starting with "Delegate to" or "Spawned by"** — breaks discoverability.
+- **Listing tools the agent doesn't need** — keep tool lists minimal.
+- **Agent with no entry point** — if there's no skill and no orchestrator that spawns it, it will never be invoked. Wire it in or create a matching skill.
+- **Antigravity parallel pattern inconsistent with Claude orchestrator** — GEMINI.md and the orchestrator agent must agree on which agents run in parallel.
+- **Copilot instruction that's too vague** — "write clean code" does nothing. "Prefer explicit column lists over SELECT *" is actionable.
