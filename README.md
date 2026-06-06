@@ -73,6 +73,15 @@ The installer asks which domain (Kaggle / SDLC / Both) and which tool (Claude Co
 
 > 17 agents · 4 skills · Requirements → Architecture → Implementation → Review
 
+**Skills**
+
+| Command | Phase | What it does |
+|---------|-------|-------------|
+| `/sdlc-biz-to-tech` | Phase 1 | Business requirement → TRD grounded in the codebase |
+| `/sdlc-architectural-review` | Phase 2 | Stress-test a TRD — scalability, security, data, ops |
+| `/sdlc-feature-dev` | Phase 3 | Implement from approved TRD — TDD, full test coverage |
+| `/sdlc-code-review` | Phase 4 | Multi-dimensional PR review → APPROVE / REQUEST CHANGES / BLOCK |
+
 A drop-in workflow template for any codebase. Works across Claude Code, Antigravity, and GitHub Copilot.
 
 | File | Tool |
@@ -142,6 +151,10 @@ skills/                  ← slash-command skills, domain-prefixed
   kaggle-stacking/
   kaggle-pseudo-labeling/
   kaggle-extra-training/
+  sdlc-biz-to-tech/
+  sdlc-architectural-review/
+  sdlc-feature-dev/
+  sdlc-code-review/
 
 domains/                 ← per-domain workflow guides and orchestration
   kaggle/
