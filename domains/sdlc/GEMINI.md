@@ -4,7 +4,7 @@
 
 ## Model and Effort
 
-All agents: Gemini 2.5 Flash at maximum effort. Use Gemini 2.5 Pro for architectural-review and code-review orchestrators where deeper reasoning is critical.
+All agents: Gemini 3.5 Flash at maximum effort. Use Gemini 3.5 Pro for architectural-review and code-review orchestrators where deeper reasoning is critical.
 
 ## Subagent Orchestration
 
