@@ -95,6 +95,31 @@ A drop-in workflow template for any codebase. Works across Claude Code, Antigrav
 
 ---
 
+### Research Paper Writing
+
+> 2 agents · 1 skill · Venue selection → Literature review → Writing → Submission
+
+Agentic research assistant that searches the web for top papers, fetches live journal/publisher formatting guidelines, and guides writing from abstract to references. Adapts to any venue.
+
+**Agents**
+
+| Agent | Role |
+|-------|------|
+| `literature-reviewer` | Deep literature search — arXiv, Semantic Scholar, venue proceedings. Annotated bibliography + gap analysis |
+| `venue-advisor` | Identifies and ranks target journals/conferences. Fetches live guidelines, impact factors, acceptance rates |
+
+**Skills**
+
+| Command | What it does |
+|---------|-------------|
+| `/research-paper` | End-to-end paper writing — venue selection, literature search, section-by-section writing, publisher formatting, submission checklist |
+
+**Supported publishers:** IEEE, ACM, Nature, Springer (LNCS), Elsevier, NeurIPS, ICML, ICLR, ACL, CVPR, arXiv and more — guidelines fetched live.
+
+→ [Domain guide](domains/research/README.md)
+
+---
+
 ### Finance Research *(coming soon)*
 
 > 1 agent · skills planned · Quant research, factor analysis, backtesting, portfolio construction
@@ -145,6 +170,9 @@ agents/                  ← role-based AI workers (auto-delegated)
     system-design.md
     competitive-programming.md
     ml-research.md
+  research/
+    literature-reviewer.md
+    venue-advisor.md
   finance/
     finance-researcher.md
 
@@ -165,11 +193,13 @@ skills/                  ← slash-command skills, domain-prefixed
   sdlc-architectural-review/
   sdlc-feature-dev/
   sdlc-code-review/
+  research-paper/
   skill-creator/
 
 domains/                 ← per-domain workflow guides and orchestration
   kaggle/
   sdlc/
+  research/
   finance/
 
 .claude-plugin/          ← plugin manifest
