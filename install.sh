@@ -26,17 +26,19 @@ fi
 
 # ── Domain selection ───────────────────────────────────────────────────────────
 header "Select domain"
-echo "  1) Kaggle  — competitive ML (12 skills, 3 agents)"
-echo "  2) SDLC    — software development lifecycle (17 agents, 4 skills)"
-echo "  3) Both"
-echo -n "  Choice [1/2/3]: "
+echo "  1) Kaggle   — competitive ML (12 skills, 3 agents)"
+echo "  2) SDLC     — software development lifecycle (17 agents, 4 skills)"
+echo "  3) Research — paper writing, literature search, venue selection (1 skill, 2 agents)"
+echo "  4) All"
+echo -n "  Choice [1/2/3/4]: "
 read -r DOMAIN_CHOICE
 
 case "$DOMAIN_CHOICE" in
   1) DOMAINS=("kaggle") ;;
   2) DOMAINS=("sdlc") ;;
-  3) DOMAINS=("kaggle" "sdlc") ;;
-  *) echo "Invalid choice. Defaulting to both."; DOMAINS=("kaggle" "sdlc") ;;
+  3) DOMAINS=("research") ;;
+  4) DOMAINS=("kaggle" "sdlc" "research") ;;
+  *) echo "  Invalid. Defaulting to All."; DOMAINS=("kaggle" "sdlc" "research") ;;
 esac
 
 # ── Tool selection ─────────────────────────────────────────────────────────────
@@ -53,7 +55,7 @@ case "$TOOL_CHOICE" in
   2) TOOLS=("antigravity") ;;
   3) TOOLS=("copilot") ;;
   4) TOOLS=("claude" "antigravity" "copilot") ;;
-  *) echo "Invalid choice. Defaulting to all."; TOOLS=("claude" "antigravity" "copilot") ;;
+  *) echo "  Invalid. Defaulting to All."; TOOLS=("claude" "antigravity" "copilot") ;;
 esac
 
 # ── Download helper ────────────────────────────────────────────────────────────
@@ -69,37 +71,11 @@ fetch() {
   fi
 }
 
-# ── Install SDLC files ─────────────────────────────────────────────────────────
-install_sdlc() {
-  header "Installing SDLC domain"
-
-  for tool in "${TOOLS[@]}"; do
-    case "$tool" in
-      claude)
-        fetch "$REPO/domains/sdlc/CLAUDE.md" "$DEST/CLAUDE.md"
-        fetch "$REPO/domains/sdlc/AGENTS.md"  "$DEST/AGENTS.md"
-        ok "CLAUDE.md + AGENTS.md → $DEST/"
-        ;;
-      antigravity)
-        fetch "$REPO/domains/sdlc/AGENTS.md"  "$DEST/AGENTS.md"
-        fetch "$REPO/domains/sdlc/GEMINI.md"  "$DEST/GEMINI.md"
-        ok "AGENTS.md + GEMINI.md → $DEST/"
-        ;;
-      copilot)
-        fetch "$REPO/domains/sdlc/copilot-instructions.md" \
-              "$DEST/.github/copilot-instructions.md"
-        ok ".github/copilot-instructions.md → $DEST/"
-        ;;
-    esac
-  done
-}
-
-# ── Install Kaggle files ───────────────────────────────────────────────────────
+# ── Install Kaggle ─────────────────────────────────────────────────────────────
 install_kaggle() {
   header "Installing Kaggle domain"
 
-  # Skills always go into .claude/skills/ for Claude Code local use
-  SKILLS=(
+  local SKILLS=(
     kaggle-grandmaster kaggle-adversarial-validation kaggle-validation
     kaggle-eda kaggle-baselines kaggle-target-transform kaggle-optuna
     kaggle-feature-engineering kaggle-hill-climbing kaggle-stacking
@@ -110,13 +86,10 @@ install_kaggle() {
     case "$tool" in
       claude)
         for skill in "${SKILLS[@]}"; do
-          fetch "$REPO/skills/$skill/SKILL.md" \
-                "$DEST/.claude/skills/$skill/SKILL.md"
+          fetch "$REPO/skills/$skill/SKILL.md" "$DEST/.claude/skills/$skill/SKILL.md"
         done
         ok "${#SKILLS[@]} Kaggle skills → $DEST/.claude/skills/"
-
-        fetch "$REPO/domains/kaggle/ORCHESTRATION.md" \
-              "$DEST/.claude/kaggle/ORCHESTRATION.md"
+        fetch "$REPO/domains/kaggle/ORCHESTRATION.md" "$DEST/.claude/kaggle/ORCHESTRATION.md"
         ok "ORCHESTRATION.md → $DEST/.claude/kaggle/"
         ;;
       antigravity)
@@ -144,29 +117,106 @@ EOF
   done
 }
 
+# ── Install SDLC ───────────────────────────────────────────────────────────────
+install_sdlc() {
+  header "Installing SDLC domain"
+
+  local SDLC_SKILLS=(
+    sdlc-biz-to-tech sdlc-architectural-review sdlc-feature-dev sdlc-code-review
+  )
+
+  for tool in "${TOOLS[@]}"; do
+    case "$tool" in
+      claude)
+        fetch "$REPO/domains/sdlc/CLAUDE.md" "$DEST/CLAUDE.md"
+        fetch "$REPO/domains/sdlc/AGENTS.md"  "$DEST/AGENTS.md"
+        ok "CLAUDE.md + AGENTS.md → $DEST/"
+        for skill in "${SDLC_SKILLS[@]}"; do
+          fetch "$REPO/skills/$skill/SKILL.md" "$DEST/.claude/skills/$skill/SKILL.md"
+        done
+        ok "${#SDLC_SKILLS[@]} SDLC skills → $DEST/.claude/skills/"
+        ;;
+      antigravity)
+        fetch "$REPO/domains/sdlc/AGENTS.md" "$DEST/AGENTS.md"
+        fetch "$REPO/domains/sdlc/GEMINI.md" "$DEST/GEMINI.md"
+        ok "AGENTS.md + GEMINI.md → $DEST/"
+        ;;
+      copilot)
+        fetch "$REPO/domains/sdlc/copilot-instructions.md" \
+              "$DEST/.github/copilot-instructions.md"
+        ok ".github/copilot-instructions.md → $DEST/"
+        ;;
+    esac
+  done
+}
+
+# ── Install Research ───────────────────────────────────────────────────────────
+install_research() {
+  header "Installing Research domain"
+
+  for tool in "${TOOLS[@]}"; do
+    case "$tool" in
+      claude)
+        fetch "$REPO/skills/research-paper/SKILL.md" \
+              "$DEST/.claude/skills/research-paper/SKILL.md"
+        ok "research-paper skill → $DEST/.claude/skills/"
+        fetch "$REPO/domains/research/AGENTS.md" "$DEST/AGENTS.md"
+        ok "AGENTS.md → $DEST/"
+        ;;
+      antigravity)
+        fetch "$REPO/domains/research/AGENTS.md" "$DEST/AGENTS.md"
+        fetch "$REPO/domains/research/GEMINI.md" "$DEST/GEMINI.md"
+        ok "AGENTS.md + GEMINI.md → $DEST/"
+        ;;
+      copilot)
+        info "Research domain has no Copilot config (skill is agentic, not inline suggestions)"
+        ;;
+    esac
+  done
+}
+
+# ── Install meta skill (always) ────────────────────────────────────────────────
+install_meta() {
+  local has_claude=0
+  for t in "${TOOLS[@]}"; do [[ "$t" == "claude" ]] && has_claude=1; done
+  if [ "$has_claude" -eq 1 ]; then
+    fetch "$REPO/skills/skill-creator/SKILL.md" \
+          "$DEST/.claude/skills/skill-creator/SKILL.md"
+    ok "skill-creator → $DEST/.claude/skills/"
+  fi
+}
+
 # ── Run installs ───────────────────────────────────────────────────────────────
 for domain in "${DOMAINS[@]}"; do
   case "$domain" in
-    sdlc)   install_sdlc ;;
-    kaggle) install_kaggle ;;
+    kaggle)   install_kaggle ;;
+    sdlc)     install_sdlc ;;
+    research) install_research ;;
   esac
 done
+
+install_meta
 
 # ── Post-install instructions ──────────────────────────────────────────────────
 header "Done"
 
 for domain in "${DOMAINS[@]}"; do
-  if [ "$domain" = "sdlc" ]; then
-    echo ""
-    echo -e "  ${BOLD}SDLC — next step:${RESET}"
-    echo "  Edit the 'Codebase Context' section in the installed files"
-    echo "  with your stack, conventions, and constraints."
-  fi
-  if [ "$domain" = "kaggle" ]; then
-    echo ""
-    echo -e "  ${BOLD}Kaggle — next step:${RESET}"
-    echo "  Start a Claude Code session and run: /kaggle-grandmaster"
-  fi
+  case "$domain" in
+    sdlc)
+      echo -e "\n  ${BOLD}SDLC — next step:${RESET}"
+      echo "  Edit the 'Codebase Context' section in CLAUDE.md / AGENTS.md"
+      echo "  with your stack, conventions, and constraints."
+      echo "  Then run: /sdlc-biz-to-tech"
+      ;;
+    kaggle)
+      echo -e "\n  ${BOLD}Kaggle — next step:${RESET}"
+      echo "  Start a Claude Code session and run: /kaggle-grandmaster"
+      ;;
+    research)
+      echo -e "\n  ${BOLD}Research — next step:${RESET}"
+      echo "  Start a Claude Code session and run: /research-paper"
+      ;;
+  esac
 done
 
 for tool in "${TOOLS[@]}"; do

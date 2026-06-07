@@ -1,13 +1,13 @@
 {
   "name": "agent-skills",
-  "description": "Multi-domain Claude Code skill and agent library. Kaggle domain: 12 competition skills (adversarial validation, EDA, baselines, Optuna, feature engineering, hill climbing, stacking, pseudo-labeling, seed ensembling) + 3 agents. SDLC domain: 17 agents across 4 phases (requirements → architecture → implementation → review). Finance domain coming soon.",
-  "version": "2.0.0",
+  "description": "Multi-domain skill and agent library. Kaggle: 12 competition skills + 3 agents (EDA, baselines, Optuna, feature engineering, ensembling, pseudo-labeling). SDLC: 17 agents + 4 skills across 4 phases (requirements → architecture → implementation → review). Research: paper writing with live web search for guidelines, literature review, and venue selection across IEEE, ACM, Nature, Springer, Elsevier, NeurIPS, ICML, and more.",
+  "version": "2.1.0",
   "author": {
     "name": "Ashwini Sharma",
     "email": "ashwini.sharma0807@gmail.com"
   },
   "category": "data-science",
-  "tags": ["kaggle", "machine-learning", "data-science", "sdlc", "finance", "ensemble", "optuna", "feature-engineering", "gpu", "software-engineering"],
+  "tags": ["kaggle", "machine-learning", "data-science", "sdlc", "research", "academic", "finance", "ensemble", "optuna", "feature-engineering", "gpu", "software-engineering"],
   "source": {
     "source": "git-subdir",
     "url": "https://github.com/OlixIgnacious/agent-skills",
