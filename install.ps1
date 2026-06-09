@@ -1,7 +1,7 @@
 # Agent Skills Installer — Windows (PowerShell)
 # Usage: irm https://raw.githubusercontent.com/OlixIgnacious/agent-skills/main/install.ps1 | iex
 # Or:    .\install.ps1  (from a local clone)
-# Requires: PowerShell 5.1+ (built into Windows 10/11)
+# Flags: --global (default), --local
 
 $REPO = "https://raw.githubusercontent.com/OlixIgnacious/agent-skills/main"
 $ErrorActionPreference = "Stop"
@@ -13,11 +13,20 @@ function Write-Info($msg)   { Write-Host "  " -NoNewline; Write-Host " -> " -For
 Write-Header "Agent Skills Installer"
 Write-Host "  github.com/OlixIgnacious/agent-skills"
 
-# ── Destination ────────────────────────────────────────────────────────────────
-$Dest = if ($args[0]) { $args[0] } else { "." }
-$Dest = (Resolve-Path $Dest -ErrorAction SilentlyContinue)?.Path ?? $Dest
-if (-not (Test-Path $Dest)) { New-Item -ItemType Directory -Path $Dest | Out-Null }
-Write-Host "`nInstalling into: $Dest"
+# ── Scope ──────────────────────────────────────────────────────────────────────
+$Scope = "global"
+if ($args -contains "--local") { $Scope = "local" }
+
+if ($Scope -eq "global") {
+    $ClaudeDest = Join-Path $env:USERPROFILE ".claude"
+    Write-Host "`nScope: global — available in every project"
+    Write-Host "Installing into: $ClaudeDest"
+} else {
+    $ClaudeDest = Join-Path (Get-Location) ".claude"
+    Write-Host "`nScope: local — this project only"
+    Write-Host "Installing into: $ClaudeDest"
+}
+$ConfigDest = Get-Location
 
 # ── Domain selection ───────────────────────────────────────────────────────────
 Write-Header "Select domain"
@@ -64,41 +73,48 @@ function Fetch($Src, $Dst) {
 function Install-Kaggle {
     Write-Header "Installing Kaggle domain"
     $Skills = @(
-        "kaggle-grandmaster", "kaggle-adversarial-validation", "kaggle-validation",
-        "kaggle-eda", "kaggle-baselines", "kaggle-target-transform", "kaggle-optuna",
-        "kaggle-feature-engineering", "kaggle-hill-climbing", "kaggle-stacking",
-        "kaggle-pseudo-labeling", "kaggle-extra-training"
+        "kaggle-grandmaster","kaggle-adversarial-validation","kaggle-validation",
+        "kaggle-eda","kaggle-baselines","kaggle-target-transform","kaggle-optuna",
+        "kaggle-feature-engineering","kaggle-hill-climbing","kaggle-stacking",
+        "kaggle-pseudo-labeling","kaggle-extra-training"
     )
+    $Agents = @("kaggle-grandmaster","kaggle-feature-engineer","kaggle-ensemble-builder")
+
     foreach ($tool in $Tools) {
         switch ($tool) {
             "claude" {
                 foreach ($skill in $Skills) {
-                    Fetch "$REPO/skills/$skill/SKILL.md" "$Dest\.claude\skills\$skill\SKILL.md"
+                    Fetch "$REPO/skills/$skill/SKILL.md" "$ClaudeDest\skills\$skill\SKILL.md"
                 }
-                Write-Ok "$($Skills.Count) Kaggle skills -> $Dest\.claude\skills\"
-                Fetch "$REPO/domains/kaggle/ORCHESTRATION.md" "$Dest\.claude\kaggle\ORCHESTRATION.md"
-                Write-Ok "ORCHESTRATION.md -> $Dest\.claude\kaggle\"
+                Write-Ok "$($Skills.Count) Kaggle skills -> $ClaudeDest\skills\"
+                foreach ($agent in $Agents) {
+                    Fetch "$REPO/agents/kaggle/$agent.md" "$ClaudeDest\agents\$agent.md"
+                }
+                Write-Ok "$($Agents.Count) Kaggle agents -> $ClaudeDest\agents\"
+                Fetch "$REPO/domains/kaggle/ORCHESTRATION.md" "$ClaudeDest\kaggle\ORCHESTRATION.md"
+                Write-Ok "ORCHESTRATION.md -> $ClaudeDest\kaggle\"
             }
             "antigravity" {
                 Write-Info "Kaggle skills are Claude Code format — AGENTS.md stub created"
-                Fetch "$REPO/domains/kaggle/ORCHESTRATION.md" "$Dest\KAGGLE_ORCHESTRATION.md"
+                Fetch "$REPO/domains/kaggle/ORCHESTRATION.md" "$ConfigDest\KAGGLE_ORCHESTRATION.md"
                 @"
 # Kaggle Competition Workflow
-# Full skills available for Claude Code: /plugin install OlixIgnacious/agent-skills
+# Full skills + agents available for Claude Code: github.com/OlixIgnacious/agent-skills
+
+## Agents
+- kaggle-grandmaster — competition orchestrator
+- kaggle-feature-engineer — feature engineering specialist
+- kaggle-ensemble-builder — ensemble and blending specialist
 
 ## Workflow
 Phase 1: Adversarial validation -> Fold strategy -> EDA
 Phase 2: Diverse baselines -> Target transforms -> Optuna -> Feature engineering
 Phase 3: Hill climbing -> Stacking
 Phase 4: Pseudo-labeling -> Seed ensemble -> Full-data retrain -> Submit
-
-See KAGGLE_ORCHESTRATION.md for the full phase-by-phase guide.
-"@ | Set-Content "$Dest\AGENTS.md"
-                Write-Ok "AGENTS.md + KAGGLE_ORCHESTRATION.md -> $Dest\"
+"@ | Set-Content "$ConfigDest\AGENTS.md"
+                Write-Ok "AGENTS.md + KAGGLE_ORCHESTRATION.md -> $ConfigDest\"
             }
-            "copilot" {
-                Write-Info "Kaggle domain has no Copilot config (skills are agentic, not inline suggestions)"
-            }
+            "copilot" { Write-Info "Kaggle domain has no Copilot config" }
         }
     }
 }
@@ -106,26 +122,39 @@ See KAGGLE_ORCHESTRATION.md for the full phase-by-phase guide.
 # ── Install SDLC ───────────────────────────────────────────────────────────────
 function Install-Sdlc {
     Write-Header "Installing SDLC domain"
-    $SdlcSkills = @("sdlc-biz-to-tech", "sdlc-architectural-review", "sdlc-feature-dev", "sdlc-code-review")
+    $SdlcSkills = @("sdlc-biz-to-tech","sdlc-architectural-review","sdlc-feature-dev","sdlc-code-review")
+    $SdlcAgents = @(
+        "biz-to-tech-orchestrator","architectural-review-orchestrator",
+        "feature-dev-orchestrator","code-review-orchestrator",
+        "requirements-analyst","code-archaeologist","api-designer",
+        "test-engineer","technical-writer",
+        "software-engineer","database-internals","devops-sre","cybersecurity",
+        "linux-debugging","system-design","competitive-programming","ml-research"
+    )
+
     foreach ($tool in $Tools) {
         switch ($tool) {
             "claude" {
-                Fetch "$REPO/domains/sdlc/CLAUDE.md" "$Dest\CLAUDE.md"
-                Fetch "$REPO/domains/sdlc/AGENTS.md"  "$Dest\AGENTS.md"
-                Write-Ok "CLAUDE.md + AGENTS.md -> $Dest\"
+                Fetch "$REPO/domains/sdlc/CLAUDE.md" "$ConfigDest\CLAUDE.md"
+                Fetch "$REPO/domains/sdlc/AGENTS.md"  "$ConfigDest\AGENTS.md"
+                Write-Ok "CLAUDE.md + AGENTS.md -> $ConfigDest\"
                 foreach ($skill in $SdlcSkills) {
-                    Fetch "$REPO/skills/$skill/SKILL.md" "$Dest\.claude\skills\$skill\SKILL.md"
+                    Fetch "$REPO/skills/$skill/SKILL.md" "$ClaudeDest\skills\$skill\SKILL.md"
                 }
-                Write-Ok "$($SdlcSkills.Count) SDLC skills -> $Dest\.claude\skills\"
+                Write-Ok "$($SdlcSkills.Count) SDLC skills -> $ClaudeDest\skills\"
+                foreach ($agent in $SdlcAgents) {
+                    Fetch "$REPO/agents/sdlc/$agent.md" "$ClaudeDest\agents\$agent.md"
+                }
+                Write-Ok "$($SdlcAgents.Count) SDLC agents -> $ClaudeDest\agents\"
             }
             "antigravity" {
-                Fetch "$REPO/domains/sdlc/AGENTS.md" "$Dest\AGENTS.md"
-                Fetch "$REPO/domains/sdlc/GEMINI.md" "$Dest\GEMINI.md"
-                Write-Ok "AGENTS.md + GEMINI.md -> $Dest\"
+                Fetch "$REPO/domains/sdlc/AGENTS.md" "$ConfigDest\AGENTS.md"
+                Fetch "$REPO/domains/sdlc/GEMINI.md" "$ConfigDest\GEMINI.md"
+                Write-Ok "AGENTS.md + GEMINI.md -> $ConfigDest\"
             }
             "copilot" {
-                Fetch "$REPO/domains/sdlc/copilot-instructions.md" "$Dest\.github\copilot-instructions.md"
-                Write-Ok ".github\copilot-instructions.md -> $Dest\"
+                Fetch "$REPO/domains/sdlc/copilot-instructions.md" "$ConfigDest\.github\copilot-instructions.md"
+                Write-Ok ".github\copilot-instructions.md -> $ConfigDest\"
             }
         }
     }
@@ -134,31 +163,35 @@ function Install-Sdlc {
 # ── Install Research ───────────────────────────────────────────────────────────
 function Install-Research {
     Write-Header "Installing Research domain"
+    $ResearchAgents = @("literature-reviewer","venue-advisor")
+
     foreach ($tool in $Tools) {
         switch ($tool) {
             "claude" {
-                Fetch "$REPO/skills/research-paper/SKILL.md" "$Dest\.claude\skills\research-paper\SKILL.md"
-                Write-Ok "research-paper skill -> $Dest\.claude\skills\"
-                Fetch "$REPO/domains/research/AGENTS.md" "$Dest\AGENTS.md"
-                Write-Ok "AGENTS.md -> $Dest\"
+                Fetch "$REPO/skills/research-paper/SKILL.md" "$ClaudeDest\skills\research-paper\SKILL.md"
+                Write-Ok "research-paper skill -> $ClaudeDest\skills\"
+                foreach ($agent in $ResearchAgents) {
+                    Fetch "$REPO/agents/research/$agent.md" "$ClaudeDest\agents\$agent.md"
+                }
+                Write-Ok "$($ResearchAgents.Count) Research agents -> $ClaudeDest\agents\"
+                Fetch "$REPO/domains/research/AGENTS.md" "$ConfigDest\AGENTS.md"
+                Write-Ok "AGENTS.md -> $ConfigDest\"
             }
             "antigravity" {
-                Fetch "$REPO/domains/research/AGENTS.md" "$Dest\AGENTS.md"
-                Fetch "$REPO/domains/research/GEMINI.md" "$Dest\GEMINI.md"
-                Write-Ok "AGENTS.md + GEMINI.md -> $Dest\"
+                Fetch "$REPO/domains/research/AGENTS.md" "$ConfigDest\AGENTS.md"
+                Fetch "$REPO/domains/research/GEMINI.md" "$ConfigDest\GEMINI.md"
+                Write-Ok "AGENTS.md + GEMINI.md -> $ConfigDest\"
             }
-            "copilot" {
-                Write-Info "Research domain has no Copilot config (skill is agentic, not inline suggestions)"
-            }
+            "copilot" { Write-Info "Research domain has no Copilot config" }
         }
     }
 }
 
-# ── Install meta skill (always for Claude) ─────────────────────────────────────
+# ── Meta skill ─────────────────────────────────────────────────────────────────
 function Install-Meta {
     if ($Tools -contains "claude") {
-        Fetch "$REPO/skills/skill-creator/SKILL.md" "$Dest\.claude\skills\skill-creator\SKILL.md"
-        Write-Ok "skill-creator -> $Dest\.claude\skills\"
+        Fetch "$REPO/skills/skill-creator/SKILL.md" "$ClaudeDest\skills\skill-creator\SKILL.md"
+        Write-Ok "skill-creator -> $ClaudeDest\skills\"
     }
 }
 
@@ -170,12 +203,10 @@ foreach ($domain in $Domains) {
         "research" { Install-Research }
     }
 }
-
 Install-Meta
 
 # ── Next steps ─────────────────────────────────────────────────────────────────
 Write-Header "Done"
-
 foreach ($domain in $Domains) {
     switch ($domain) {
         "sdlc" {
@@ -194,7 +225,6 @@ foreach ($domain in $Domains) {
         }
     }
 }
-
 foreach ($tool in $Tools) {
     switch ($tool) {
         "claude"      { Write-Host "`n  Claude Code:  " -NoNewline; Write-Host "claude" -ForegroundColor Cyan -NoNewline; Write-Host " (in your project directory)" }
@@ -202,5 +232,4 @@ foreach ($tool in $Tools) {
         "copilot"     { Write-Host "`n  Copilot:      Commit " -NoNewline; Write-Host ".github\copilot-instructions.md" -ForegroundColor Cyan -NoNewline; Write-Host " — auto-detected by VS Code" }
     }
 }
-
 Write-Host ""
