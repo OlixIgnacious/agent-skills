@@ -12,12 +12,7 @@ curl -fsSL https://raw.githubusercontent.com/OlixIgnacious/agent-skills/main/ins
 irm https://raw.githubusercontent.com/OlixIgnacious/agent-skills/main/install.ps1 | iex
 ```
 
-**Claude Code plugin**
-```
-/plugin install OlixIgnacious/agent-skills
-```
-
-The installer asks which domain (Kaggle / SDLC / Both) and which tool (Claude Code / Antigravity / Copilot / All), then downloads only the files you need.
+The installer asks which domain (Kaggle / SDLC / Research / All) and which tool (Claude Code / Antigravity / Copilot / All), then downloads only the files you need.
 
 ---
 
