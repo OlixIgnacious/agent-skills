@@ -24,6 +24,9 @@ else
   mkdir -p "$DEST"
 fi
 
+# ── Re-attach stdin to terminal (fixes curl | bash pipe) ──────────────────────
+exec < /dev/tty
+
 # ── Domain selection ───────────────────────────────────────────────────────────
 header "Select domain"
 echo "  1) Kaggle   — competitive ML (12 skills, 3 agents)"
