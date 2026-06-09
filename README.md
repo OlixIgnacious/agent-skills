@@ -4,7 +4,7 @@ A multi-domain Claude Code skill library — agents and skills organized by use 
 
 **macOS / Linux**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/OlixIgnacious/agent-skills/main/install.sh | bash
+bash <(curl -fsSL https://raw.githubusercontent.com/OlixIgnacious/agent-skills/main/install.sh)
 ```
 
 **Windows** (PowerShell)
@@ -13,6 +13,12 @@ irm https://raw.githubusercontent.com/OlixIgnacious/agent-skills/main/install.ps
 ```
 
 The installer asks which domain (Kaggle / SDLC / Research / All) and which tool (Claude Code / Antigravity / Copilot / All), then downloads only the files you need.
+
+By default, Claude Code skills are installed into `~/.claude/skills/` so they work in **every project**. Pass `--local` to install into the current project's `.claude/skills/` instead:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/OlixIgnacious/agent-skills/main/install.sh) --local
+```
 
 ---
 
